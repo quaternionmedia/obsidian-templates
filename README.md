@@ -26,3 +26,13 @@ These are templates for daily, weekly, and monthly notes. They are designed to w
 - A notes section
 - Notes created today (Requres the `Dataview` plugin)
 - Notes (last) touched today (Requres the `Dataview` plugin)
+
+### YouTube
+This is a template for YouTube videos. When created, this template uses the current clipboard contents to populate the video's metadata. It includes:
+- Video title becomes the note title
+- Note automatically moves to a `Media` folder
+- Metadata, including author and channel link
+- Tags for media and video
+- Watched date
+- Notes section
+- Video embed using `<iframe>`
