@@ -10,7 +10,7 @@ year: <% tp.date.now("YYYY") %>
 const DAILY_DIR = 'Daily'
 -%>
 
-<< [[<%* DAILY_DIR -%>/<% moment(tp.file.title, 'YYYY-[W]WW').subtract(1, 'week').format('YYYY') %>/<% moment(tp.file.title, 'YYYY-[W]WW').subtract(1, 'week').format('MM-MMMM') %>/<% moment(tp.file.title, 'YYYY-[W]WW').subtract(1, 'week').format('YYYY-MM') %>|Last week]] | [[<%* DAILY_DIR -%>/<% moment(tp.file.title, 'YYYY-[W]WW').add(1, 'week').format('YYYY') %>/<% moment(tp.file.title, 'YYYY-[W]WW').add(1, 'week').format('MM-MMMM') %>/<% moment(tp.file.title, 'YYYY-[W]WW').add(1, 'week').format('YYYY-MM') %>|Next week]] >>
+<< [[<% DAILY_DIR %>/<% moment(tp.file.title, 'YYYY-[W]WW').subtract(1, 'week').format('gggg') %>/<% moment(tp.file.title, 'YYYY-[W]WW').subtract(1, 'week').format('MM-MMMM') %>/<% moment(tp.file.title, 'YYYY-[W]WW').subtract(1, 'week').format('YYYY-[W]WW') %>|Last week]] | [[<% DAILY_DIR %>/<% moment(tp.file.title, 'YYYY-[W]WW').add(1, 'week').format('gggg') %>/<% moment(tp.file.title, 'YYYY-[W]WW').add(1, 'week').format('MM-MMMM') %>/<% moment(tp.file.title, 'YYYY-[W]WW').add(1, 'week').format('YYYY-[W]WW') %>|Next week]] >>
 
 tags:: [[+Weekly Notes]]
 
