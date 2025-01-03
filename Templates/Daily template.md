@@ -6,7 +6,10 @@ tags:: [[+Daily Notes]]
 
 # <% moment(tp.file.title,'YYYY-MM-DD').format("dddd, MMMM DD, YYYY") %>
 
-<< [[🗓 Daily/<% tp.date.yesterday("YYYY") %>/<% tp.date.yesterday("MM-MMMM") %>/<% tp.date.yesterday("YYYY-MM-DD") %>|Yesterday]] | [[🗓 Daily/<% tp.date.tomorrow("YYYY") %>/<% tp.date.tomorrow("MM-MMMM") %>/<% tp.date.tomorrow("YYYY-MM-DD") %>|Tomorrow]] >>
+<%*
+const DAILY_DIR = 'Daily'
+-%>
+<< [[<% DAILY_DIR %>/<% tp.date.yesterday("YYYY") %>/<% tp.date.yesterday("MM-MMMM") %>/<% tp.date.yesterday("YYYY-MM-DD") %>|Yesterday]] | [[<% DAILY_DIR %>/<% tp.date.tomorrow("YYYY") %>/<% tp.date.tomorrow("MM-MMMM") %>/<% tp.date.tomorrow("YYYY-MM-DD") %>|Tomorrow]] >>
 
 ---
 ### 📅 Day planner
