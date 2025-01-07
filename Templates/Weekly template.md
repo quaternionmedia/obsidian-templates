@@ -6,6 +6,8 @@ year: <% tp.date.now("YYYY") %>
 ---
 # <% moment(tp.file.title,'YYYY-[W]WW').format("[Week] W [of] YYYY") %>
 
+tags:: [[Daily/+Weekly Notes]] #weekly
+
 <%*
 const DAILY_DIR = 'Daily'
 -%>

@@ -6,6 +6,8 @@ year: <% tp.date.now('YYYY') %>
 ---
 # <% moment(tp.file.title, 'YYYY-MM').format('MMMM YYYY') %>
 
+tags:: [[Daily/+Monthly Notes]] #monthly
+
 <%*
 const DAILY_DIR = 'Daily'
 -%>

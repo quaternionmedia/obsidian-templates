@@ -2,9 +2,9 @@
 created: <% tp.file.creation_date() %>
 date: <% tp.date.now("YYYY-MM-DD") %>
 ---
-tags:: [[+Daily Notes]]
-
 # <% moment(tp.file.title,'YYYY-MM-DD').format("dddd, MMMM DD, YYYY") %>
+
+tags:: [[Daily/+Daily Notes]] #daily
 
 <%*
 const DAILY_DIR = 'Daily'
@@ -12,11 +12,11 @@ const DAILY_DIR = 'Daily'
 << [[<% DAILY_DIR %>/<% tp.date.yesterday("YYYY") %>/<% tp.date.yesterday("MM-MMMM") %>/<% tp.date.yesterday("YYYY-MM-DD") %>|Yesterday]] | [[<% DAILY_DIR %>/<% tp.date.tomorrow("YYYY") %>/<% tp.date.tomorrow("MM-MMMM") %>/<% tp.date.tomorrow("YYYY-MM-DD") %>|Tomorrow]] >>
 
 ---
-### 📅 Day planner
+## 📅 Day planner
 - [ ] <% tp.file.cursor() %>
 
 ---
-###❔Daily Questions
+## ❔Daily Questions
 ##### 🌜 Last night, after work, I...
 - 
 

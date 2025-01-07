@@ -1,0 +1,135 @@
+{
+  "version": 2,
+  "projects": [
+    {
+      "fieldConfig": {
+        "status": {
+          "options": [
+            " 🆕 New",
+            "🔖 Ready",
+            " 👀 In review"
+          ]
+        }
+      },
+      "defaultName": "",
+      "templates": [],
+      "excludedNotes": [],
+      "isDefault": false,
+      "dataSource": {
+        "kind": "folder",
+        "config": {
+          "path": "Projects/Demo",
+          "recursive": false
+        }
+      },
+      "newNotesFolder": "",
+      "views": [
+        {
+          "config": {},
+          "filter": {
+            "conjunction": "and",
+            "conditions": []
+          },
+          "colors": {
+            "conditions": []
+          },
+          "sort": {
+            "criteria": []
+          },
+          "id": "5e666084-d3c9-45b0-a6f3-eeb1b4ec9793",
+          "name": "Table",
+          "type": "table"
+        },
+        {
+          "config": {
+            "groupByField": "status",
+            "columns": {
+              " 🆕 New": {
+                "weight": 0
+              },
+              "📋 Backlog": {
+                "weight": 1
+              },
+              "🔖 Ready": {
+                "weight": 2
+              },
+              "🏗 In progress": {
+                "weight": 3
+              },
+              "✅ Done": {
+                "weight": 4
+              },
+              " 👀 In review": {
+                "weight": 5
+              }
+            }
+          },
+          "filter": {
+            "conjunction": "and",
+            "conditions": []
+          },
+          "colors": {
+            "conditions": []
+          },
+          "sort": {
+            "criteria": []
+          },
+          "id": "f198fcf9-4ef5-4506-9c4d-3ebdbbaffca7",
+          "name": "Board",
+          "type": "board"
+        },
+        {
+          "config": {
+            "dateField": "due"
+          },
+          "filter": {
+            "conjunction": "and",
+            "conditions": []
+          },
+          "colors": {
+            "conditions": []
+          },
+          "sort": {
+            "criteria": []
+          },
+          "id": "d3addcfb-69eb-45dd-bda9-419c267bdca9",
+          "name": "Calendar",
+          "type": "calendar"
+        },
+        {
+          "config": {
+            "coverField": "",
+            "fitStyle": "cover"
+          },
+          "filter": {
+            "conjunction": "and",
+            "conditions": []
+          },
+          "colors": {
+            "conditions": []
+          },
+          "sort": {
+            "criteria": []
+          },
+          "id": "3eec375c-99a6-4d04-9d4b-c20d22233523",
+          "name": "Gallery",
+          "type": "gallery"
+        }
+      ],
+      "id": "40b28f64-a0df-4464-af91-20deb209b2bb",
+      "name": "Demo project"
+    }
+  ],
+  "archives": [],
+  "preferences": {
+    "projectSizeLimit": 1000,
+    "frontmatter": {
+      "quoteStrings": "PLAIN"
+    },
+    "locale": {
+      "firstDayOfWeek": "default"
+    },
+    "commands": [],
+    "linkBehavior": "open-editor"
+  }
+}

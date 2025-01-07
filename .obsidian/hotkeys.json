@@ -1,0 +1,42 @@
+{
+  "templater-obsidian:jump-to-next-cursor-location": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "Tab"
+    },
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "`"
+    }
+  ],
+  "obsidian-day-planner:show-day-planner-today-note": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "D"
+    }
+  ],
+  "app:toggle-left-sidebar": [
+    {
+      "modifiers": [
+        "Alt",
+        "Meta"
+      ],
+      "key": "ArrowLeft"
+    }
+  ],
+  "app:toggle-right-sidebar": [
+    {
+      "modifiers": [
+        "Alt",
+        "Meta"
+      ],
+      "key": "ArrowRight"
+    }
+  ]
+}
