@@ -16,22 +16,26 @@ const DAILY_DIR = 'Daily'
 - [ ] <% tp.file.cursor() %>
 
 ---
-## ❔Daily Questions
-##### 🌜 Last night, after work, I...
-- 
-
-##### 🙌 One thing I'm excited about right now is...
-- 
-
-##### 🚀 One+ thing I plan to accomplish today is...
+## ✅ Todo
 - [ ] 
 
-##### 👎 One thing I'm struggling with today is...
+---
+## ❔Daily Questions
+### 🌜 Last night, after work, I...
+- 
+
+### 🙌 One thing I'm excited about right now is...
+- 
+
+### 🚀 One+ thing I plan to accomplish today is...
+- [ ] 
+
+### 👎 One thing I'm struggling with today is...
 - 
 
 ---
-# 📝 Notes
-- <% tp.file.cursor(1) %>
+## 📝 Notes
+- 
 
 ---
 ### Notes created today
