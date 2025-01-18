@@ -3,7 +3,8 @@ This is a ready-to-go "Starter Pack" for [Obsidian](https://obsidian.md/).
 
 It is designed to be a starting point for new users, providing a basic folder structure, pre-installed plugins, and helpful settings enabled. 
 
-All templates can be used independently of the Starter Pack, but are included here for convenience.
+> [!tip] Pick 'n pull
+> All templates can be used independently of the Starter Pack, but some require additional customization if using them outside this preconfigured vault.
 
 ## Features
 - 🔋 "Batteries included" pre-installed plugins
@@ -23,10 +24,14 @@ All templates can be used independently of the Starter Pack, but are included he
 3. (Optional) [Check for plugin updates](obsidian://advanced-uri?settingid=third-party-plugin) and upgrade to the latest versions
 
 ### Plugins
+- [Advanced Tables](https://github.com/tgrosinger/advanced-tables-obsidian)
+- [Advanced URI](https://github.com/Vinzent03/obsidian-advanced-uri)
 - [Dataview](https://github.com/blacksmithgu/obsidian-dataview)
 - [Day planner](https://github.com/ivan-lednev/obsidian-day-planner)
+- [Emoji Shortcodes](https://github.com/phibr0/obsidian-emoji-shortcodes)
 - [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin)
 - [Iconize](https://github.com/FlorianWoelki/obsidian-iconize)
+- [Meta Bind](https://github.com/mProjectsCode/obsidian-meta-bind-plugin)
 - [Periodic notes](https://github.com/liamcain/obsidian-periodic-notes)
 - [Tasks](https://github.com/obsidian-tasks-group/obsidian-tasks)
 - [Templater](https://github.com/SilentVoid13/Templater)
@@ -45,6 +50,9 @@ These are templates for daily, weekly, and monthly notes. They are designed to w
 - Notes created today (Requres the `Dataview` plugin)
 - Notes (last) touched today (Requres the `Dataview` plugin)
 See the [[Daily/README|Daily folder README]] for more information
+
+> [!tip]+ Daily note shortcut
+> Use `ALT + D` to open today's daily note, or create it if it doesn't exist!
 
 ### YouTube template
 This is a template to automatically collect metadata (title, description, etc) from a YouTube video. 

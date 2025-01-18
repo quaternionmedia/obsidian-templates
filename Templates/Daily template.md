@@ -1,10 +1,13 @@
 ---
 created: <% tp.file.creation_date() %>
 date: <% tp.date.now("YYYY-MM-DD") %>
+tags:
+  - daily
+  - notes
 ---
 # <% moment(tp.file.title,'YYYY-MM-DD').format("dddd, MMMM DD, YYYY") %>
 
-tags:: [[Daily/+Daily Notes]] #daily
+tags:: [[Daily/+Daily Notes]]
 
 <%*
 const DAILY_DIR = 'Daily'
@@ -21,29 +24,39 @@ const DAILY_DIR = 'Daily'
 
 ---
 ## ❔Daily Questions
-### 🌜 Last night, after work, I...
-- 
 
 ### 🙌 One thing I'm excited about right now is...
 - 
 
-### 🚀 One+ thing I plan to accomplish today is...
-- [ ] 
-
 ### 👎 One thing I'm struggling with today is...
+- 
+
+### 🙏 One thing I'm thankful for today is...
 - 
 
 ---
 ## 📝 Notes
 - 
 
----
-### Notes created today
-```dataview
-LIST WHERE file.cday = this.file.day
-```
+```meta-bind-button
+label: 💡
+icon: plus
+style: default
+actions:
+  - type: createNote
+    folderPath: Ideas
+    fileName: "idea"
+    openNote: true
+    openIfAlreadyExists: false
 
-### Notes last touched today
-```dataview
-LIST WHERE file.mday = this.file.day
 ```
+---
+> [!abstract]- Notes created today
+> ```dataview
+> LIST WHERE file.cday = this.file.day
+> ```
+
+> [!abstract]- Notes last touched today
+> ```dataview
+> LIST WHERE file.mday = this.file.day
+> ```
