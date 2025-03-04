@@ -40,7 +40,8 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "alphabetical"
+                "sortOrder": "alphabetical",
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "File explorer"
@@ -173,12 +174,11 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 6
       }
     ],
     "direction": "horizontal",
-    "width": 877.5,
-    "collapsed": true
+    "width": 877.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -195,12 +195,15 @@
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
       "markdown-importer:Open Markdown importer": false,
-      "audio-recorder:Start/stop recording": false,
-      "periodic-notes:Open today": false
+      "audio-recorder:Start/stop recording": false
     }
   },
-  "active": "095e48416b79af79",
+  "active": "719adda51c5de748",
   "lastOpenFiles": [
+    "Daily/2025/01-January/2025-01-18.md",
+    "README.md",
+    "Daily/2025/01-January",
+    "Daily/2025",
     "Templates/YouTube template.md",
     "Projects/Demo/Bits.md",
     "Projects/Demo/The rest of the project.md",
@@ -208,7 +211,6 @@
     "Projects/Demo",
     "Templates/Monthly template.md",
     "Templates/Daily template.md",
-    "README.md",
     "YT/README.md",
     "Templates/README.md",
     "Resources/README.md",
@@ -221,8 +223,6 @@
     "Clippings/README.md",
     "Daily/README.md",
     "Daily/2025/01-January/2025-01-07.md",
-    "Daily/2025/01-January",
-    "Daily/2025",
     "Resources/ISO-8601.md",
     "Templates/Weekly template.md",
     "Daily/US.md",
