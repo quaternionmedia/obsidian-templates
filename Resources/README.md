@@ -1,1 +1,1 @@
-References for standards, hardware, software, and other resources
+Educational resources for standards, hardware, software, and other technical information

@@ -17,6 +17,7 @@ It is designed to be a starting point for new users, providing a basic folder st
 - 📆 Calendar and Day Planner
 - 👷 Project management tools
 - 🎥 [[README#YouTube template|Automatic YouTube metadata extraction]]
+- 🧑‍🤝‍🧑 People and places references using `@`
 
 ## Quick Start
 1. Download or clone this repository: `git clone https://github.com/quaternionmedia/obsidian-templates.git`
@@ -24,6 +25,7 @@ It is designed to be a starting point for new users, providing a basic folder st
 3. (Optional) [Check for plugin updates](obsidian://advanced-uri?settingid=third-party-plugin) and upgrade to the latest versions
 
 ### Plugins
+- [@ Symbol Linking](https://github.com/Ebonsignori/obsidian-at-symbol-linking)
 - [Advanced Tables](https://github.com/tgrosinger/advanced-tables-obsidian)
 - [Advanced URI](https://github.com/Vinzent03/obsidian-advanced-uri)
 - [Dataview](https://github.com/blacksmithgu/obsidian-dataview)
@@ -32,6 +34,7 @@ It is designed to be a starting point for new users, providing a basic folder st
 - [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin)
 - [Iconize](https://github.com/FlorianWoelki/obsidian-iconize)
 - [Meta Bind](https://github.com/mProjectsCode/obsidian-meta-bind-plugin)
+- [Natural Language Dates](https://github.com/argenos/nldates-obsidian)
 - [Periodic notes](https://github.com/liamcain/obsidian-periodic-notes)
 - [Tasks](https://github.com/obsidian-tasks-group/obsidian-tasks)
 - [Templater](https://github.com/SilentVoid13/Templater)

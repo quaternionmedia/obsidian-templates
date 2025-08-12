@@ -1,0 +1,237 @@
+{
+  "main": {
+    "id": "9094c2bb1351ab17",
+    "type": "split",
+    "children": [
+      {
+        "id": "d17041721ae2c71c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "27ad4275e1c27dd3",
+            "type": "leaf",
+            "state": {
+              "type": "split-diff-view",
+              "state": {
+                "aFile": ".obsidian/workspace.json",
+                "bFile": ".obsidian/workspace.json",
+                "aRef": ""
+              },
+              "icon": "diff",
+              "title": "Diff: workspace.json"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "a79761d61aa4db52",
+    "type": "split",
+    "children": [
+      {
+        "id": "5e932975e42dc145",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d25d45e528a81b26",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "File explorer"
+            }
+          },
+          {
+            "id": "a8b4f7cd5255fac5",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "ccd775ff8f7fffd7",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "b620e11bb9532a71",
+    "type": "split",
+    "children": [
+      {
+        "id": "82cde77555b36f38",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4bddb23b538adbbd",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "945dcf3efbcd9707",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "README.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from README"
+            }
+          },
+          {
+            "id": "46920dcf4c3cfa08",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "470d21c6b22bd347",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {},
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          },
+          {
+            "id": "1a103957b88bd6e2",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Calendar"
+            }
+          },
+          {
+            "id": "719adda51c5de748",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          },
+          {
+            "id": "823cbcb7ec92c441",
+            "type": "leaf",
+            "state": {
+              "type": "planner-timeline",
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Timeline"
+            }
+          }
+        ],
+        "currentTab": 5
+      }
+    ],
+    "direction": "horizontal",
+    "width": 336.5
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "obsidian-git:Open Git source control": false,
+      "templater-obsidian:Templater": false,
+      "obsidian-day-planner:Open Timeline": false,
+      "obsidian-day-planner:Open Multi-Day View": false,
+      "obsidian-projects:Open projects": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "markdown-importer:Open Markdown importer": false,
+      "audio-recorder:Start/stop recording": false,
+      "periodic-notes:Open today": false
+    }
+  },
+  "active": "27ad4275e1c27dd3",
+  "lastOpenFiles": [
+    "README.md",
+    "Projects/Demo/The rest of the project.md",
+    "Projects/README.md",
+    "LaunchPad.md",
+    "Projects/Demo/Bits.md",
+    "Projects/Demo/Untitled.md",
+    "Projects/Demo/Stuff.md",
+    "Templates/Daily template.md",
+    "Daily/2025/01-January/2025-01-18.md",
+    "Daily/2025/01-January",
+    "Daily/2025",
+    "Templates/YouTube template.md",
+    "Projects/Demo",
+    "Templates/Monthly template.md",
+    "YT/README.md",
+    "Templates/README.md",
+    "Resources/README.md",
+    "Research/README.md",
+    "Misc/README.md",
+    "Media/README.md",
+    "Ideas/README.md",
+    "Health/README.md",
+    "Clippings/README.md",
+    "Daily/README.md",
+    "Daily/2025/01-January/2025-01-07.md",
+    "Resources/ISO-8601.md",
+    "Templates/Weekly template.md",
+    "Daily/US.md",
+    "Daily",
+    "YT/YouTube Metadata importer.md",
+    "YouTube Metadata importer",
+    "YT"
+  ]
+}
