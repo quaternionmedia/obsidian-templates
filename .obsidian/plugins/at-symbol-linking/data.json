@@ -8,7 +8,7 @@
   "addNewNoteTemplateFile": "",
   "addNewNoteDirectory": "References",
   "useCompatibilityMode": false,
-  "leavePopupOpenForXSpaces": 0,
+  "leavePopupOpenForXSpaces": 2,
   "invalidCharacterRegex": "[[]^|#]",
   "invalidCharacterRegexFlags": "i",
   "removeAccents": true
