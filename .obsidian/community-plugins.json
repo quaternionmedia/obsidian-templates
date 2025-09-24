@@ -3,7 +3,6 @@
   "dataview",
   "table-editor-obsidian",
   "obsidian-tasks-plugin",
-  "obsidian-git",
   "tag-wrangler",
   "periodic-notes",
   "nldates-obsidian",
@@ -19,5 +18,6 @@
   "obsidian-projects",
   "obsidian-meta-bind-plugin",
   "obsidian-minimal-settings",
-  "at-symbol-linking"
+  "at-symbol-linking",
+  "obsidian-git"
 ]
