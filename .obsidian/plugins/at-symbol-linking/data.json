@@ -1,15 +1,33 @@
 {
-  "triggerSymbol": "@",
+  "globalTriggerSymbol": "@",
   "limitLinkDirectories": [
-    "References"
+    {
+      "folder": "References",
+      "symbol": "@"
+    }
   ],
   "includeSymbol": true,
   "showAddNewNote": true,
+  "addNewNoteFolders": [
+    {
+      "folder": "References/People",
+      "symbol": "@",
+      "template": ""
+    },
+    {
+      "folder": "References",
+      "symbol": "$",
+      "template": ""
+    }
+  ],
+  "includeSymbolInNewFileName": false,
   "addNewNoteTemplateFile": "",
-  "addNewNoteDirectory": "References",
-  "useCompatibilityMode": false,
+  "addNewNoteDirectory": "",
+  "useCompatibilityMode": true,
   "leavePopupOpenForXSpaces": 2,
+  "allowedCodeBlockTypes": [],
   "invalidCharacterRegex": "[[]^|#]",
   "invalidCharacterRegexFlags": "i",
-  "removeAccents": true
+  "removeAccents": true,
+  "triggerSymbol": "@"
 }

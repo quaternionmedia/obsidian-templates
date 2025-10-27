@@ -2352,16 +2352,19 @@ var FileSuggest = class extends TextInputSuggest {
 
 // src/settings/settings.ts
 var DEFAULT_SETTINGS = {
-  triggerSymbol: "@",
+  globalTriggerSymbol: "@",
   limitLinkDirectories: [],
   includeSymbol: true,
   showAddNewNote: false,
+  addNewNoteFolders: [],
+  includeSymbolInNewFileName: false,
   addNewNoteTemplateFile: "",
   addNewNoteDirectory: "",
   useCompatibilityMode: false,
   leavePopupOpenForXSpaces: 0,
+  allowedCodeBlockTypes: [],
   // eslint-disable-next-line no-useless-escape
-  invalidCharacterRegex: `[[]^|#]`,
+  invalidCharacterRegex: `[\\[\\]^|#]`,
   invalidCharacterRegexFlags: "i",
   removeAccents: true
 };
@@ -2386,11 +2389,13 @@ var SettingsTab = class extends import_obsidian3.PluginSettingTab {
   }
   display() {
     this.containerEl.empty();
-    const triggerSymbolDesc = document.createDocumentFragment();
-    triggerSymbolDesc.append("Type this symbol to trigger the popup.");
-    new import_obsidian3.Setting(this.containerEl).setName("Trigger Symbol").setDesc(triggerSymbolDesc).addText((text) => {
-      text.setPlaceholder("@").setValue(this.plugin.settings.triggerSymbol).onChange((value) => {
-        this.plugin.settings.triggerSymbol = value;
+    const globalTriggerSymbolDesc = document.createDocumentFragment();
+    globalTriggerSymbolDesc.append(
+      "Type this symbol to trigger the popup."
+    );
+    new import_obsidian3.Setting(this.containerEl).setName("Global Trigger Symbol").setDesc(globalTriggerSymbolDesc).addText((text) => {
+      text.setPlaceholder("@").setValue(this.plugin.settings.globalTriggerSymbol).onChange((value) => {
+        this.plugin.settings.globalTriggerSymbol = value;
         this.plugin.saveSettings();
       });
       text.inputEl.onblur = () => {
@@ -2400,13 +2405,13 @@ var SettingsTab = class extends import_obsidian3.PluginSettingTab {
     });
     const includeSymbolDesc = document.createDocumentFragment();
     includeSymbolDesc.append(
-      `Include the ${this.plugin.settings.triggerSymbol} symbol prefixing the final link text`,
+      `Include the linking symbol in the final link text`,
       includeSymbolDesc.createEl("br"),
       includeSymbolDesc.createEl("em", {
-        text: `E.g. [${this.plugin.settings.includeSymbol ? this.plugin.settings.triggerSymbol : ""}evan](./evan)`
+        text: `E.g. [${this.plugin.settings.includeSymbol ? this.plugin.settings.globalTriggerSymbol : ""}evan](./evan)`
       })
     );
-    new import_obsidian3.Setting(this.containerEl).setName(`Include ${this.plugin.settings.triggerSymbol} symbol`).setDesc(includeSymbolDesc).addToggle(
+    new import_obsidian3.Setting(this.containerEl).setName(`Include link symbol prefix in display text`).setDesc(includeSymbolDesc).addToggle(
       (toggle) => toggle.setValue(this.plugin.settings.includeSymbol).onChange((value) => {
         this.plugin.settings.includeSymbol = value;
         this.plugin.saveSettings();
@@ -2415,71 +2420,59 @@ var SettingsTab = class extends import_obsidian3.PluginSettingTab {
     );
     const ruleDesc = document.createDocumentFragment();
     ruleDesc.append(
-      `${this.plugin.settings.triggerSymbol} linking will only source links from the following folders.`,
+      `Limit symbols to only source suggestions from the following folders.`,
       ruleDesc.createEl("br"),
-      `For example, you might only want contacts in the Contacts/ folder to be linked when you type ${this.plugin.settings.triggerSymbol}.`,
+      `For example, you might only want contacts in the Contacts/ folder to be linked when you type ${this.plugin.settings.globalTriggerSymbol}.`,
       ruleDesc.createEl("br"),
-      ruleDesc.createEl("em", {
-        text: "If no folders are added, links will be sourced from all folders."
-      })
+      "If no limits are added to global trigger symbol, it will source from all folders."
     );
-    new import_obsidian3.Setting(this.containerEl).setName("Limit links to folders").setDesc(ruleDesc).addButton((button) => {
+    new import_obsidian3.Setting(this.containerEl).setName("Limit links to folders by symbol").setDesc(ruleDesc).addButton((button) => {
       button.setTooltip("Add limit folder").setButtonText("+").setCta().onClick(async () => {
-        this.plugin.settings.limitLinkDirectories.push("");
+        this.plugin.settings.limitLinkDirectories.push({
+          folder: "",
+          symbol: ""
+        });
         await this.plugin.saveSettings();
         return this.display();
       });
     });
-    this.plugin.settings.limitLinkDirectories.forEach(
-      (directory, index) => {
-        const newDirectorySetting = new import_obsidian3.Setting(this.containerEl).setClass("at-symbol-linking-folder-container").addSearch((cb) => {
-          new FolderSuggest(this.app, cb.inputEl);
-          cb.setPlaceholder("Folder").setValue(directory).onChange(async (newFolder) => {
-            this.plugin.settings.limitLinkDirectories[index] = newFolder.trim();
-            await this.plugin.saveSettings();
-          });
-          cb.inputEl.onblur = () => {
-            this.validate();
-          };
-        }).addExtraButton((cb) => {
-          cb.setIcon("up-chevron-glyph").setTooltip("Move up").onClick(async () => {
-            arrayMove(
-              this.plugin.settings.limitLinkDirectories,
-              index,
-              index - 1
-            );
-            await this.plugin.saveSettings();
-            this.display();
-          });
-        }).addExtraButton((cb) => {
-          cb.setIcon("down-chevron-glyph").setTooltip("Move down").onClick(async () => {
-            arrayMove(
-              this.plugin.settings.limitLinkDirectories,
-              index,
-              index + 1
-            );
-            await this.plugin.saveSettings();
-            this.display();
-          });
-        }).addExtraButton((cb) => {
-          cb.setIcon("cross").setTooltip("Delete").onClick(async () => {
-            this.plugin.settings.limitLinkDirectories.splice(
-              index,
-              1
-            );
-            await this.plugin.saveSettings();
-            this.display();
-          });
+    this.plugin.settings.limitLinkDirectories.forEach((mapping, index) => {
+      const newDirectorySetting = new import_obsidian3.Setting(this.containerEl).setClass("at-symbol-linking-folder-container").addText((text) => {
+        text.setPlaceholder("Symbol").setValue(mapping.symbol || "").onChange(async (value) => {
+          this.plugin.settings.limitLinkDirectories[index].symbol = value;
+          await this.plugin.saveSettings();
         });
-        newDirectorySetting.controlEl.addClass(
-          "at-symbol-linking-folder-setting"
-        );
-        newDirectorySetting.infoEl.remove();
-      }
-    );
+        text.inputEl.onblur = () => {
+          this.validate();
+        };
+        text.inputEl.style.width = "70px";
+      }).addSearch((cb) => {
+        new FolderSuggest(this.app, cb.inputEl);
+        cb.setPlaceholder("Folder").setValue(mapping.folder).onChange(async (newFolder) => {
+          this.plugin.settings.limitLinkDirectories[index].folder = newFolder.trim();
+          await this.plugin.saveSettings();
+        });
+        cb.inputEl.onblur = () => {
+          this.validate();
+        };
+      }).addExtraButton((cb) => {
+        cb.setIcon("cross").setTooltip("Delete").onClick(async () => {
+          this.plugin.settings.limitLinkDirectories.splice(
+            index,
+            1
+          );
+          await this.plugin.saveSettings();
+          this.display();
+        });
+      });
+      newDirectorySetting.controlEl.addClass(
+        "at-symbol-linking-folder-setting"
+      );
+      newDirectorySetting.infoEl.remove();
+    });
     new import_obsidian3.Setting(this.containerEl).setName("Add new note").setHeading();
     new import_obsidian3.Setting(this.containerEl).setName("Add new note if it doesn't exist").setDesc(
-      `If the note doesn't exist when ${this.plugin.settings.triggerSymbol} linking, add an option to create the note.`
+      `If the note doesn't exist when symbol linking, add an option to create the note.`
     ).addToggle(
       (toggle) => toggle.setValue(this.plugin.settings.showAddNewNote).onChange((value) => {
         this.plugin.settings.showAddNewNote = value;
@@ -2488,53 +2481,97 @@ var SettingsTab = class extends import_obsidian3.PluginSettingTab {
       })
     );
     if (this.plugin.settings.showAddNewNote) {
-      const newNoteTemplateDesc = document.createDocumentFragment();
-      newNoteTemplateDesc.append(
-        `Template to use when creating a new note from ${this.plugin.settings.triggerSymbol} link.`,
-        newNoteTemplateDesc.createEl("br"),
-        "Uses formats from the ",
-        newNoteTemplateDesc.createEl("a", {
+      const includeSymbolInFileNameDesc = document.createDocumentFragment();
+      includeSymbolInFileNameDesc.append(
+        "Include the linking symbol prefix in newly created file names.",
+        includeSymbolInFileNameDesc.createEl("br"),
+        includeSymbolInFileNameDesc.createEl("em", {
+          text: `E.g. typing "${this.plugin.settings.globalTriggerSymbol}John Doe" will create "${this.plugin.settings.includeSymbolInNewFileName ? this.plugin.settings.globalTriggerSymbol : ""}John Doe.md"`
+        })
+      );
+      new import_obsidian3.Setting(this.containerEl).setName("Include link symbol prefix in new file names").setDesc(includeSymbolInFileNameDesc).addToggle(
+        (toggle) => toggle.setValue(this.plugin.settings.includeSymbolInNewFileName).onChange((value) => {
+          this.plugin.settings.includeSymbolInNewFileName = value;
+          this.plugin.saveSettings();
+          this.display();
+        })
+      );
+      const newNoteFoldersDesc = document.createDocumentFragment();
+      newNoteFoldersDesc.append(
+        `Configure folders where new notes can be created with specific symbols.`,
+        newNoteFoldersDesc.createEl("br"),
+        "Each symbol must be unique. Templates use formats from the ",
+        newNoteFoldersDesc.createEl("a", {
           text: "core templates plugin",
           href: "https://help.obsidian.md/Plugins/Templates"
         }),
-        " to replace the following variables in the template:",
-        newNoteTemplateDesc.createEl("br"),
-        newNoteTemplateDesc.createEl("code", {
+        " (",
+        newNoteFoldersDesc.createEl("code", {
           text: "{{title}}"
         }),
-        " - The title of the new file",
-        newNoteTemplateDesc.createEl("br"),
-        newNoteTemplateDesc.createEl("code", {
+        ", ",
+        newNoteFoldersDesc.createEl("code", {
           text: "{{date}}"
         }),
-        " - The current date",
-        newNoteTemplateDesc.createEl("br"),
-        newNoteTemplateDesc.createEl("code", {
+        ", ",
+        newNoteFoldersDesc.createEl("code", {
           text: "{{time}}"
         }),
-        " - The current time"
+        ")."
       );
-      new import_obsidian3.Setting(this.containerEl).setName("Add new note template").setDesc(newNoteTemplateDesc).addSearch((cb) => {
-        new FileSuggest(this.app, cb.inputEl);
-        cb.setPlaceholder("No template (blank note)").setValue(this.plugin.settings.addNewNoteTemplateFile).onChange(async (newFile) => {
-          this.plugin.settings.addNewNoteTemplateFile = newFile.trim();
+      new import_obsidian3.Setting(this.containerEl).setName("Add new notes for folders by symbol").setDesc(newNoteFoldersDesc).addButton((button) => {
+        button.setTooltip("Add folder").setButtonText("+").setCta().onClick(async () => {
+          this.plugin.settings.addNewNoteFolders.push({
+            folder: "",
+            symbol: "",
+            template: ""
+          });
           await this.plugin.saveSettings();
+          return this.display();
         });
-        cb.inputEl.onblur = () => {
-          this.validate();
-        };
       });
-      new import_obsidian3.Setting(this.containerEl).setName("Add new note folder").setDesc(
-        `Folder to create new notes in when using ${this.plugin.settings.triggerSymbol} linking.`
-      ).addSearch((cb) => {
-        new FolderSuggest(this.app, cb.inputEl);
-        cb.setPlaceholder("No folder (root)").setValue(this.plugin.settings.addNewNoteDirectory).onChange(async (newFolder) => {
-          this.plugin.settings.addNewNoteDirectory = newFolder.trim();
-          await this.plugin.saveSettings();
+      this.plugin.settings.addNewNoteFolders.forEach((mapping, index) => {
+        const newFolderSetting = new import_obsidian3.Setting(this.containerEl).setClass("at-symbol-linking-folder-container").addText((text) => {
+          text.setPlaceholder("Symbol").setValue(mapping.symbol || "").onChange(async (value) => {
+            this.plugin.settings.addNewNoteFolders[index].symbol = value;
+            await this.plugin.saveSettings();
+          });
+          text.inputEl.onblur = () => {
+            this.validate();
+          };
+          text.inputEl.style.width = "70px";
+        }).addSearch((cb) => {
+          new FolderSuggest(this.app, cb.inputEl);
+          cb.setPlaceholder("Folder").setValue(mapping.folder).onChange(async (newFolder) => {
+            this.plugin.settings.addNewNoteFolders[index].folder = newFolder.trim();
+            await this.plugin.saveSettings();
+          });
+          cb.inputEl.onblur = () => {
+            this.validate();
+          };
+        }).addSearch((cb) => {
+          new FileSuggest(this.app, cb.inputEl);
+          cb.setPlaceholder("No template (blank)").setValue(mapping.template || "").onChange(async (newFile) => {
+            this.plugin.settings.addNewNoteFolders[index].template = newFile.trim();
+            await this.plugin.saveSettings();
+          });
+          cb.inputEl.onblur = () => {
+            this.validate();
+          };
+        }).addExtraButton((cb) => {
+          cb.setIcon("cross").setTooltip("Delete").onClick(async () => {
+            this.plugin.settings.addNewNoteFolders.splice(
+              index,
+              1
+            );
+            await this.plugin.saveSettings();
+            this.display();
+          });
         });
-        cb.inputEl.onblur = () => {
-          this.validate();
-        };
+        newFolderSetting.controlEl.addClass(
+          "at-symbol-linking-folder-setting"
+        );
+        newFolderSetting.infoEl.remove();
       });
     }
     new import_obsidian3.Setting(this.containerEl).setName("Suggestion popup behavior").setHeading();
@@ -2560,7 +2597,7 @@ var SettingsTab = class extends import_obsidian3.PluginSettingTab {
     );
     const leavePopupOpenDesc = document.createDocumentFragment();
     leavePopupOpenDesc.append(
-      `When ${this.plugin.settings.triggerSymbol} linking, you might want to type a full name e.g. "Brandon Sanderson" without the popup closing.`,
+      `When symbol linking, you might want to type a full name e.g. "Brandon Sanderson" without the popup closing.`,
       leavePopupOpenDesc.createEl("br"),
       leavePopupOpenDesc.createEl("em", {
         text: "When set above 0, you'll need to press escape, return/enter, or type over X spaces to close the popup."
@@ -2577,6 +2614,60 @@ var SettingsTab = class extends import_obsidian3.PluginSettingTab {
       text.inputEl.onblur = () => {
         this.validate();
       };
+    });
+    const allowedCodeBlockTypesDesc = document.createDocumentFragment();
+    allowedCodeBlockTypesDesc.append(
+      `By default, symbol linking is disabled inside code blocks.`,
+      allowedCodeBlockTypesDesc.createEl("br"),
+      "Add code block types here to allow linking within those specific code blocks.",
+      allowedCodeBlockTypesDesc.createEl("br"),
+      allowedCodeBlockTypesDesc.createEl("em", {
+        text: "Example: 'ad-note' will allow linking inside ```ad-note code blocks."
+      })
+    );
+    new import_obsidian3.Setting(this.containerEl).setName("Allowed code block types").setDesc(allowedCodeBlockTypesDesc).addButton((button) => {
+      return button.setTooltip("Add code block type").setButtonText("+").setCta().onClick(async () => {
+        this.plugin.settings.allowedCodeBlockTypes.push("");
+        await this.plugin.saveSettings();
+        this.display();
+      });
+    });
+    this.plugin.settings.allowedCodeBlockTypes.forEach((type, index) => {
+      new import_obsidian3.Setting(this.containerEl).setName(`Code block type ${index + 1}`).addText((text) => {
+        text.setPlaceholder("ad-note").setValue(type).onChange(async (value) => {
+          this.plugin.settings.allowedCodeBlockTypes[index] = value;
+          await this.plugin.saveSettings();
+        });
+      }).addExtraButton((button) => {
+        button.setIcon("up-chevron-glyph").setTooltip("Move up").onClick(async () => {
+          arrayMove(
+            this.plugin.settings.allowedCodeBlockTypes,
+            index,
+            index - 1
+          );
+          await this.plugin.saveSettings();
+          this.display();
+        });
+      }).addExtraButton((button) => {
+        button.setIcon("down-chevron-glyph").setTooltip("Move down").onClick(async () => {
+          arrayMove(
+            this.plugin.settings.allowedCodeBlockTypes,
+            index,
+            index + 1
+          );
+          await this.plugin.saveSettings();
+          this.display();
+        });
+      }).addExtraButton((button) => {
+        button.setIcon("cross").setTooltip("Delete").onClick(async () => {
+          this.plugin.settings.allowedCodeBlockTypes.splice(
+            index,
+            1
+          );
+          await this.plugin.saveSettings();
+          this.display();
+        });
+      });
     });
     new import_obsidian3.Setting(this.containerEl).setName("Advanced settings").setHeading();
     const invalidCharacterRegexDesc = document.createDocumentFragment();
@@ -2627,48 +2718,130 @@ var SettingsTab = class extends import_obsidian3.PluginSettingTab {
       await this.plugin.saveSettings();
       return this.display();
     };
-    if (settings.triggerSymbol.length !== 1) {
-      new import_obsidian3.Notice(`Trigger symbol must be a single character.`);
+    if (settings.globalTriggerSymbol.length !== 1) {
+      new import_obsidian3.Notice(`Global trigger symbol must be a single character.`);
       await updateSetting(
-        "triggerSymbol",
-        settings.triggerSymbol.length ? settings.triggerSymbol[0] : "@"
+        "globalTriggerSymbol",
+        settings.globalTriggerSymbol.length ? settings.globalTriggerSymbol[0] : "@"
       );
     }
     for (let i = 0; i < settings.limitLinkDirectories.length; i++) {
-      const folder = settings.limitLinkDirectories[i];
-      if (folder === "") {
+      const mapping = settings.limitLinkDirectories[i];
+      if (mapping.folder === "") {
         continue;
       }
-      const folderFile = this.app.vault.getAbstractFileByPath(folder);
+      const folderFile = this.app.vault.getAbstractFileByPath(
+        mapping.folder
+      );
       if (!folderFile) {
         new import_obsidian3.Notice(
-          `Unable to find folder at path: ${folder}. Please add it if you want to limit links to this folder.`
+          `Unable to find folder at path: ${mapping.folder}. Please add it if you want to limit links to this folder.`
         );
         const newFolders = [...settings.limitLinkDirectories];
-        newFolders[i] = "";
+        newFolders[i] = { folder: "", symbol: "" };
         await updateSetting("limitLinkDirectories", newFolders);
       }
     }
-    if (settings.showAddNewNote && settings.addNewNoteTemplateFile) {
-      const templateFile = this.app.vault.getAbstractFileByPath(
-        `${settings.addNewNoteTemplateFile}.md`
-      );
-      if (!templateFile) {
+    for (let i = 0; i < settings.limitLinkDirectories.length; i++) {
+      const mapping = settings.limitLinkDirectories[i];
+      if (mapping.symbol && settings.invalidCharacterRegex) {
+        try {
+          const invalidRegex = new RegExp(
+            settings.invalidCharacterRegex,
+            settings.invalidCharacterRegexFlags
+          );
+          if (invalidRegex.test(mapping.symbol)) {
+            new import_obsidian3.Notice(
+              `Folder symbol "${mapping.symbol}" matches invalid character regex and will not work properly.`
+            );
+            const newFolders = [...settings.limitLinkDirectories];
+            newFolders[i] = { ...mapping, symbol: "" };
+            await updateSetting("limitLinkDirectories", newFolders);
+            continue;
+          }
+        } catch (e) {
+        }
+      }
+      if (mapping.symbol && mapping.symbol.length > 1) {
         new import_obsidian3.Notice(
-          `Unable to find template file at path: ${settings.addNewNoteTemplateFile}.md`
+          `Folder symbol must be a single character or empty.`
         );
-        await updateSetting("addNewNoteTemplateFile", "");
+        const newFolders = [...settings.limitLinkDirectories];
+        newFolders[i] = { ...mapping, symbol: mapping.symbol[0] };
+        await updateSetting("limitLinkDirectories", newFolders);
       }
     }
-    if (settings.showAddNewNote && settings.addNewNoteDirectory) {
-      const templateFile = this.app.vault.getAbstractFileByPath(
-        `${settings.addNewNoteDirectory}`
-      );
-      if (!templateFile) {
-        new import_obsidian3.Notice(
-          `Unable to find folder for new notes at path: ${settings.addNewNoteDirectory}. Please add it if you want to create new notes in this folder.`
-        );
-        await updateSetting("addNewNoteDirectory", "");
+    if (settings.showAddNewNote) {
+      const seenSymbols = /* @__PURE__ */ new Set();
+      for (let i = 0; i < settings.addNewNoteFolders.length; i++) {
+        const mapping = settings.addNewNoteFolders[i];
+        if (mapping.symbol && mapping.symbol.length > 1) {
+          new import_obsidian3.Notice(
+            `New note folder symbol must be a single character.`
+          );
+          const newFolders = [...settings.addNewNoteFolders];
+          newFolders[i] = { ...mapping, symbol: mapping.symbol[0] };
+          await updateSetting("addNewNoteFolders", newFolders);
+          continue;
+        }
+        if (mapping.symbol) {
+          if (seenSymbols.has(mapping.symbol)) {
+            new import_obsidian3.Notice(
+              `New note folder symbol "${mapping.symbol}" must be unique. Clearing duplicate occurrence.`
+            );
+            const newFolders = [...settings.addNewNoteFolders];
+            newFolders[i] = { ...mapping, symbol: "" };
+            await updateSetting("addNewNoteFolders", newFolders);
+            continue;
+          }
+          seenSymbols.add(mapping.symbol);
+        }
+        if (mapping.symbol && settings.invalidCharacterRegex) {
+          try {
+            const invalidRegex = new RegExp(
+              settings.invalidCharacterRegex,
+              settings.invalidCharacterRegexFlags
+            );
+            if (invalidRegex.test(mapping.symbol)) {
+              new import_obsidian3.Notice(
+                `New note folder symbol "${mapping.symbol}" matches invalid character regex and will not work properly.`
+              );
+              const newFolders = [...settings.addNewNoteFolders];
+              newFolders[i] = { ...mapping, symbol: "" };
+              await updateSetting("addNewNoteFolders", newFolders);
+              continue;
+            }
+          } catch (e) {
+          }
+        }
+        if (mapping.folder) {
+          const folderFile = this.app.vault.getAbstractFileByPath(
+            mapping.folder
+          );
+          if (!folderFile) {
+            new import_obsidian3.Notice(
+              `Unable to find folder at path: ${mapping.folder}. Please add it if you want to create new notes in this folder.`
+            );
+            const newFolders = [...settings.addNewNoteFolders];
+            newFolders[i] = { ...mapping, folder: "" };
+            await updateSetting("addNewNoteFolders", newFolders);
+            continue;
+          }
+        }
+        if (mapping.template) {
+          const templateFile = this.app.vault.getAbstractFileByPath(
+            `${mapping.template}.md`
+          );
+          if (!templateFile) {
+            new import_obsidian3.Notice(
+              `Unable to find template file at path: ${mapping.template}.md`
+            );
+            const newFolders = [...settings.addNewNoteFolders];
+            newFolders[i] = { ...mapping, template: "" };
+            await updateSetting("addNewNoteFolders", newFolders);
+            continue;
+          }
+        }
       }
     }
     if (isNaN(parseInt(settings.leavePopupOpenForXSpaces.toString())) || settings.leavePopupOpenForXSpaces < 0) {
@@ -2704,7 +2877,6 @@ var SettingsTab = class extends import_obsidian3.PluginSettingTab {
 
 // src/native-suggestion/suggest-popup.ts
 var import_obsidian7 = require("obsidian");
-var import_language = require("@codemirror/language");
 
 // src/shared-suggestion/sharedSelectSuggestion.ts
 var import_obsidian5 = require("obsidian");
@@ -2757,45 +2929,60 @@ function fileNameNoExtension(path) {
 }
 
 // src/shared-suggestion/sharedSelectSuggestion.ts
-async function sharedSelectSuggestion(app2, settings, value) {
-  var _a, _b, _c, _d, _e, _f, _g, _h;
+async function sharedSelectSuggestion(app2, settings, value, triggeredSymbol) {
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o;
   let linkFile;
   if ((_a = value == null ? void 0 : value.obj) == null ? void 0 : _a.isCreateNewOption) {
+    if (!((_b = value == null ? void 0 : value.obj) == null ? void 0 : _b.query) || !((_c = value == null ? void 0 : value.obj) == null ? void 0 : _c.filePath)) {
+      new import_obsidian5.Notice("Please type a note name before creating");
+      return "";
+    }
     let newNoteContents = "";
-    if (settings.addNewNoteTemplateFile) {
+    const templatePath = ((_d = value.obj) == null ? void 0 : _d.newNoteTemplate) || settings.addNewNoteTemplateFile;
+    if (templatePath) {
       const fileTemplate = app2.vault.getAbstractFileByPath(
-        `${settings.addNewNoteTemplateFile}.md`
+        `${templatePath}.md`
       );
-      newNoteContents = await app2.vault.read(fileTemplate) || "";
-      newNoteContents = await replaceNewFileVars(
-        app2,
-        newNoteContents,
-        fileNameNoExtension((_b = value.obj) == null ? void 0 : _b.filePath)
-      );
+      if (fileTemplate) {
+        newNoteContents = await app2.vault.read(fileTemplate) || "";
+        newNoteContents = await replaceNewFileVars(
+          app2,
+          newNoteContents,
+          fileNameNoExtension((_e = value.obj) == null ? void 0 : _e.filePath)
+        );
+      }
     }
     try {
       linkFile = await app2.vault.create(
-        (_c = value.obj) == null ? void 0 : _c.filePath,
+        (_f = value.obj) == null ? void 0 : _f.filePath,
         newNoteContents
       );
-      value.obj.alias = (_d = value.obj) == null ? void 0 : _d.query;
+      value.obj.alias = (_g = value.obj) == null ? void 0 : _g.query;
     } catch (error) {
-      new import_obsidian5.Notice(
-        `Unable to create new note at path: ${(_e = value.obj) == null ? void 0 : _e.filePath}. Please open an issue on GitHub, https://github.com/Ebonsignori/obsidian-at-symbol-linking/issues`,
-        0
-      );
-      throw error;
+      if (((_h = error == null ? void 0 : error.message) == null ? void 0 : _h.includes("already exists")) || ((_i = error == null ? void 0 : error.message) == null ? void 0 : _i.includes("File already exists"))) {
+        new import_obsidian5.Notice(
+          `Note "${(_j = value.obj) == null ? void 0 : _j.query}" already exists at path: ${(_k = value.obj) == null ? void 0 : _k.filePath}`
+        );
+      } else {
+        new import_obsidian5.Notice(
+          `Unable to create new note at path: ${(_l = value.obj) == null ? void 0 : _l.filePath}. Please open an issue on GitHub, https://github.com/Ebonsignori/obsidian-at-symbol-linking/issues`,
+          0
+        );
+      }
+      return "";
     }
   }
   const currentFile = app2.workspace.getActiveFile();
   if (!linkFile) {
     linkFile = app2.vault.getAbstractFileByPath(
-      (_f = value.obj) == null ? void 0 : _f.filePath
+      (_m = value.obj) == null ? void 0 : _m.filePath
     );
   }
-  let alias = ((_g = value.obj) == null ? void 0 : _g.alias) || "";
-  if (settings.includeSymbol)
-    alias = `${settings.triggerSymbol}${alias || ((_h = value.obj) == null ? void 0 : _h.fileName)}`;
+  let alias = ((_n = value.obj) == null ? void 0 : _n.alias) || "";
+  if (settings.includeSymbol) {
+    const symbolToInclude = triggeredSymbol || settings.globalTriggerSymbol;
+    alias = `${symbolToInclude}${alias || ((_o = value.obj) == null ? void 0 : _o.fileName)}`;
+  }
   let linkText = app2.fileManager.generateMarkdownLink(
     linkFile,
     (currentFile == null ? void 0 : currentFile.path) || "",
@@ -2857,19 +3044,42 @@ function removeAccents(str) {
 }
 
 // src/shared-suggestion/sharedGetSuggestions.ts
-function sharedGetSuggestions(files, query, settings) {
+function sharedGetSuggestions(files, query, settings, specificFolders, triggeredSymbol, isNewNoteOnlySymbol) {
   var _a, _b;
+  if (isNewNoteOnlySymbol && settings.showAddNewNote) {
+    const results2 = [];
+    const folderMapping = settings.addNewNoteFolders.find(
+      (mapping) => mapping.symbol === triggeredSymbol
+    );
+    if (folderMapping) {
+      const folder = folderMapping.folder || "";
+      const template = folderMapping.template || "";
+      const separator = folder ? "/" : "";
+      const symbolPrefix = settings.includeSymbolInNewFileName && triggeredSymbol ? triggeredSymbol : "";
+      const displayPath = query ? `${folder.trim()}${separator}${symbolPrefix}${query.trim()}.md` : folder ? `${folder}/...` : "...";
+      results2.push({
+        obj: {
+          isCreateNewOption: true,
+          query: query || "",
+          fileName: "Create new note",
+          filePath: displayPath,
+          newNoteTemplate: template
+        }
+      });
+    }
+    return results2;
+  }
   const options = [];
   for (const file of files) {
-    if (settings.limitLinkDirectories.length > 0) {
-      let isAllowed = false;
-      for (const folder of settings.limitLinkDirectories) {
+    if (specificFolders && specificFolders.length > 0) {
+      let isInSpecificFolder = false;
+      for (const folder of specificFolders) {
         if (file.path.startsWith(folder)) {
-          isAllowed = true;
+          isInSpecificFolder = true;
           break;
         }
       }
-      if (!isAllowed) {
+      if (!isInSpecificFolder) {
         continue;
       }
     }
@@ -2922,13 +3132,26 @@ function sharedGetSuggestions(files, query, settings) {
           return !((_a2 = result.obj) == null ? void 0 : _a2.isCreateNewOption);
         }
       );
-      const separator = settings.addNewNoteDirectory ? "/" : "";
+      let folder = settings.addNewNoteDirectory || "";
+      let template = settings.addNewNoteTemplateFile || "";
+      if (triggeredSymbol && settings.addNewNoteFolders.length > 0) {
+        const folderMapping = settings.addNewNoteFolders.find(
+          (mapping) => mapping.symbol === triggeredSymbol
+        );
+        if (folderMapping) {
+          folder = folderMapping.folder || "";
+          template = folderMapping.template || "";
+        }
+      }
+      const separator = folder ? "/" : "";
+      const symbolPrefix = settings.includeSymbolInNewFileName && triggeredSymbol ? triggeredSymbol : "";
       results.push({
         obj: {
           isCreateNewOption: true,
           query,
           fileName: "Create new note",
-          filePath: `${settings.addNewNoteDirectory.trim()}${separator}${query.trim()}.md`
+          filePath: `${folder.trim()}${separator}${symbolPrefix}${query.trim()}.md`,
+          newNoteTemplate: template
         }
       });
     }
@@ -2950,12 +3173,121 @@ var isValidFileNameCharacter = (char, settings) => {
   ).test(char);
 };
 
+// src/utils/allowed-code-block-check.ts
+var import_language = require("@codemirror/language");
+function isAllowedCodeBlockType(state, node, settings) {
+  if (settings.allowedCodeBlockTypes.length === 0) {
+    return false;
+  }
+  try {
+    let codeBlockType = "";
+    const searchStart = Math.max(0, node.from - 200);
+    const contextText = state.doc.sliceString(searchStart, node.from);
+    const lines = contextText.split("\n");
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i].trim();
+      if (line.startsWith("```")) {
+        const langMatch = line.match(/^```\s*(.*)$/);
+        if (langMatch) {
+          codeBlockType = langMatch[1].trim();
+          break;
+        }
+      }
+    }
+    if (!codeBlockType) {
+      return false;
+    }
+    return settings.allowedCodeBlockTypes.includes(codeBlockType);
+  } catch (error) {
+    return false;
+  }
+}
+function isInDisallowedCodeBlock(editor, settings, isPopupOpen = false) {
+  var _a, _b;
+  let isInDisallowedCodeBlock2 = false;
+  const cm = (editor == null ? void 0 : editor.cm) || editor;
+  if (cm == null ? void 0 : cm.state) {
+    const cursor = (_b = (_a = cm.state) == null ? void 0 : _a.selection) == null ? void 0 : _b.main;
+    if (!cursor) {
+      return false;
+    }
+    (0, import_language.syntaxTree)(cm.state).iterate({
+      from: cursor.from,
+      to: cursor.to,
+      enter: (node) => {
+        var _a2;
+        if (node.type.name === "inline-code") {
+          isInDisallowedCodeBlock2 = true;
+        } else if ((_a2 = node.type.name) == null ? void 0 : _a2.includes("codeblock")) {
+          const isAllowedType = isAllowedCodeBlockType(
+            cm.state,
+            node,
+            settings
+          );
+          if (!isAllowedType) {
+            isInDisallowedCodeBlock2 = true;
+          }
+        }
+      }
+    });
+  }
+  return isInDisallowedCodeBlock2 && !isPopupOpen;
+}
+
+// src/utils/symbol-folder-mapping.ts
+function getSymbolTriggerInfo(typedChar, settings) {
+  if (typedChar === settings.globalTriggerSymbol) {
+    if (settings.limitLinkDirectories.length > 0) {
+      const matchingFolders2 = [];
+      for (const mapping of settings.limitLinkDirectories) {
+        if (mapping.folder && (mapping.symbol === settings.globalTriggerSymbol || !mapping.symbol || mapping.symbol.trim() === "")) {
+          matchingFolders2.push(mapping.folder);
+        }
+      }
+      return {
+        isGlobalSymbol: true,
+        specificFolders: matchingFolders2.length > 0 ? matchingFolders2 : void 0
+      };
+    }
+    return {
+      isGlobalSymbol: true
+    };
+  }
+  const matchingFolders = [];
+  for (const mapping of settings.limitLinkDirectories) {
+    if (mapping.symbol && mapping.symbol === typedChar && mapping.folder) {
+      matchingFolders.push(mapping.folder);
+    }
+  }
+  if (matchingFolders.length > 0) {
+    return {
+      isGlobalSymbol: false,
+      specificFolders: matchingFolders
+    };
+  }
+  if (settings.showAddNewNote && settings.addNewNoteFolders.length > 0) {
+    for (const mapping of settings.addNewNoteFolders) {
+      if (mapping.symbol && mapping.symbol === typedChar) {
+        return {
+          isGlobalSymbol: false,
+          specificFolders: [],
+          // Empty array means no existing files should be shown
+          isNewNoteOnlySymbol: true
+        };
+      }
+    }
+  }
+  return null;
+}
+
 // src/native-suggestion/suggest-popup.ts
 var SuggestionPopup = class extends import_obsidian7.EditorSuggest {
   constructor(app2, settings) {
     super(app2);
     this.firstOpenedCursor = null;
     this.focused = false;
+    this.triggeredSymbol = "";
+    this.isNewNoteOnlySymbol = false;
     this.name = "@ Symbol Linking Suggest";
     this.app = app2;
     this.settings = settings;
@@ -2972,10 +3304,9 @@ var SuggestionPopup = class extends import_obsidian7.EditorSuggest {
   }
   getSuggestions(context) {
     const files = context.file.vault.getMarkdownFiles();
-    return sharedGetSuggestions(files, context.query, this.settings);
+    return sharedGetSuggestions(files, context.query, this.settings, this.specificFolders, this.triggeredSymbol, this.isNewNoteOnlySymbol);
   }
   onTrigger(cursor, editor) {
-    var _a, _b;
     let query = "";
     const typedChar = editor.getRange(
       { ...cursor, ch: cursor.ch - 1 },
@@ -2984,26 +3315,20 @@ var SuggestionPopup = class extends import_obsidian7.EditorSuggest {
     if (this.firstOpenedCursor && (typedChar === "\n" || typedChar === "	")) {
       return this.closeSuggestion();
     }
-    let isInCodeBlock = false;
-    if (editor == null ? void 0 : editor.cm) {
-      const cm = editor.cm;
-      const cursor2 = (_b = (_a = cm.state) == null ? void 0 : _a.selection) == null ? void 0 : _b.main;
-      (0, import_language.syntaxTree)(cm.state).iterate({
-        from: cursor2.from,
-        to: cursor2.to,
-        enter(node) {
-          var _a2;
-          if (node.type.name === "inline-code" || ((_a2 = node.type.name) == null ? void 0 : _a2.includes("codeblock"))) {
-            isInCodeBlock = true;
-          }
-        }
-      });
-    }
-    if (isInCodeBlock && !this.firstOpenedCursor) {
+    const isInDisallowedCodeBlockResult = isInDisallowedCodeBlock(
+      editor,
+      this.settings,
+      !!this.firstOpenedCursor
+    );
+    if (isInDisallowedCodeBlockResult && !this.firstOpenedCursor) {
       return null;
     }
-    if (typedChar === this.settings.triggerSymbol) {
+    const symbolInfo = getSymbolTriggerInfo(typedChar, this.settings);
+    if (symbolInfo) {
       this.firstOpenedCursor = cursor;
+      this.triggeredSymbol = typedChar;
+      this.specificFolders = symbolInfo.specificFolders;
+      this.isNewNoteOnlySymbol = symbolInfo.isNewNoteOnlySymbol || false;
       return {
         start: { ...cursor, ch: cursor.ch - 1 },
         end: cursor,
@@ -3043,16 +3368,18 @@ var SuggestionPopup = class extends import_obsidian7.EditorSuggest {
       },
       this.context.end
     )) || "";
+    const symbolToReplace = this.triggeredSymbol || this.settings.globalTriggerSymbol;
     const linkText = await sharedSelectSuggestion(
       this.app,
       this.settings,
-      value
+      value,
+      symbolToReplace
     );
     (_b = this.context) == null ? void 0 : _b.editor.replaceRange(
       linkText,
       {
         line: this.context.start.line,
-        ch: line.lastIndexOf(this.settings.triggerSymbol)
+        ch: line.lastIndexOf(symbolToReplace)
       },
       this.context.end
     );
@@ -3071,6 +3398,8 @@ var SuggestionPopup = class extends import_obsidian7.EditorSuggest {
   }
   closeSuggestion() {
     this.firstOpenedCursor = null;
+    this.triggeredSymbol = "";
+    this.specificFolders = void 0;
     this.close();
     return null;
   }
@@ -3294,12 +3623,16 @@ var Suggest2 = class {
   }
 };
 var LinkSuggest = class {
-  constructor(app2, inputEl, settings, onSelect) {
+  constructor(app2, inputEl, settings, onSelect, specificFolders, triggeredSymbol, isNewNoteOnlySymbol) {
+    this.isNewNoteOnlySymbol = false;
     this.app = app2;
     this.inputEl = inputEl;
     this.settings = settings;
     this.scope = new import_obsidian8.Scope();
     this.onSelect = onSelect;
+    this.specificFolders = specificFolders;
+    this.triggeredSymbol = triggeredSymbol;
+    this.isNewNoteOnlySymbol = isNewNoteOnlySymbol || false;
     this.suggestEl = createDiv("suggestion-container");
     if (import_obsidian8.Platform.isMobile) {
       this.suggestEl.style.padding = "0";
@@ -3374,7 +3707,7 @@ var LinkSuggest = class {
   }
   getSuggestions(query) {
     const files = this.app.vault.getMarkdownFiles();
-    return sharedGetSuggestions(files, query, this.settings);
+    return sharedGetSuggestions(files, query, this.settings, this.specificFolders, this.triggeredSymbol, this.isNewNoteOnlySymbol);
   }
   renderSuggestion(value, el) {
     sharedRenderSuggestion(value, el);
@@ -3383,7 +3716,8 @@ var LinkSuggest = class {
     const linkText = await sharedSelectSuggestion(
       this.app,
       this.settings,
-      value
+      value,
+      this.triggeredSymbol
     );
     this.onSelect(linkText);
   }
@@ -3403,6 +3737,7 @@ function atSymbolTriggerExtension(app2, settings) {
         this.isOpen = false;
         this.suggestionEl = null;
         this.suggestionPopup = null;
+        this.isNewNoteOnlySymbol = false;
         this.view = view;
         this.handleKeyEvent = this.handleKeyEvent.bind(this);
         this.handleClickEvent = this.handleClickEvent.bind(this);
@@ -3421,15 +3756,21 @@ function atSymbolTriggerExtension(app2, settings) {
         this.isOpen = false;
         this.firstOpenedCursor = null;
         this.openQuery = "";
+        this.triggerSymbol = "";
+        this.specificFolders = void 0;
+        this.isNewNoteOnlySymbol = false;
         (_a = this.suggestionPopup) == null ? void 0 : _a.close();
         (_b = this.suggestionEl) == null ? void 0 : _b.remove();
         this.suggestionPopup = null;
         this.suggestionEl = null;
         return true;
       }
-      openSuggestion() {
+      openSuggestion(triggerSymbol, folders, isNewNoteOnlySymbol) {
         this.isOpen = true;
         this.firstOpenedCursor = this.getCursor();
+        this.triggerSymbol = triggerSymbol;
+        this.specificFolders = folders;
+        this.isNewNoteOnlySymbol = isNewNoteOnlySymbol || false;
         return true;
       }
       handleKeyEvent(event) {
@@ -3450,10 +3791,21 @@ function atSymbolTriggerExtension(app2, settings) {
         (0, import_language2.syntaxTree)((_f = (_e = this.view) == null ? void 0 : _e.viewState) == null ? void 0 : _f.state).iterate({
           from: cursor.from,
           to: cursor.to,
-          enter(node) {
-            var _a2;
-            if (node.type.name === "hmd-frontmatter" || node.type.name === "inline-code" || ((_a2 = node.type.name) == null ? void 0 : _a2.includes("codeblock"))) {
+          enter: (node) => {
+            var _a2, _b2, _c2;
+            if (node.type.name === "hmd-frontmatter") {
               isInValidContext = false;
+            } else if (node.type.name === "inline-code") {
+              isInValidContext = false;
+            } else if ((_a2 = node.type.name) == null ? void 0 : _a2.includes("codeblock")) {
+              const isAllowedType = isAllowedCodeBlockType(
+                (_c2 = (_b2 = this.view) == null ? void 0 : _b2.viewState) == null ? void 0 : _c2.state,
+                node,
+                settings
+              );
+              if (!isAllowedType) {
+                isInValidContext = false;
+              }
             }
           }
         });
@@ -3461,11 +3813,21 @@ function atSymbolTriggerExtension(app2, settings) {
           return false;
         }
         let justOpened = false;
-        if (!this.isOpen && typedChar === settings.triggerSymbol) {
-          justOpened = true;
-          this.openSuggestion();
-        } else if (!this.isOpen) {
-          return false;
+        if (!this.isOpen) {
+          const symbolInfo = getSymbolTriggerInfo(
+            typedChar,
+            settings
+          );
+          if (symbolInfo) {
+            justOpened = true;
+            this.openSuggestion(
+              typedChar,
+              symbolInfo.specificFolders,
+              symbolInfo.isNewNoteOnlySymbol
+            );
+          } else {
+            return false;
+          }
         }
         const key = event.key.toLocaleLowerCase();
         if (typedChar === "Backspace") {
@@ -3511,7 +3873,10 @@ function atSymbolTriggerExtension(app2, settings) {
             app2,
             this.suggestionEl,
             settings,
-            this.onSelect.bind(this)
+            this.onSelect.bind(this),
+            this.specificFolders,
+            this.triggerSymbol,
+            this.isNewNoteOnlySymbol
           );
           this.suggestionPopup.onInputChanged(this.openQuery);
         }
@@ -3651,11 +4016,37 @@ var AtSymbolLinking = class extends import_obsidian10.Plugin {
     }
   }
   async loadSettings() {
+    const loadedData = await this.loadData();
     this.settings = Object.assign(
       {},
       DEFAULT_SETTINGS,
-      await this.loadData()
+      loadedData
     );
+    await this.migrateSettings();
+  }
+  async migrateSettings() {
+    if (this.settings.limitLinkDirectories.length > 0) {
+      const firstItem = this.settings.limitLinkDirectories[0];
+      if (typeof firstItem === "string") {
+        this.settings.limitLinkDirectories = this.settings.limitLinkDirectories.map(
+          (folder) => ({
+            folder,
+            symbol: this.settings.globalTriggerSymbol
+          })
+        );
+        await this.saveSettings();
+      }
+    }
+    if (this.settings.showAddNewNote && (this.settings.addNewNoteTemplateFile || this.settings.addNewNoteDirectory) && this.settings.addNewNoteFolders.length === 0) {
+      this.settings.addNewNoteFolders.push({
+        folder: this.settings.addNewNoteDirectory || "",
+        symbol: this.settings.globalTriggerSymbol,
+        template: this.settings.addNewNoteTemplateFile || ""
+      });
+      this.settings.addNewNoteTemplateFile = "";
+      this.settings.addNewNoteDirectory = "";
+      await this.saveSettings();
+    }
   }
   async saveSettings() {
     await this.saveData(this.settings);
